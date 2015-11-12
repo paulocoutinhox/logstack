@@ -32,14 +32,9 @@ deps:
 	${GODEPS} gopkg.in/olivere/elastic.v3
 	${GODEPS} gopkg.in/ini.v1
 
-start:
-	make stop
-	nohup ${GOPATH}/bin/${EXECUTABLE} >> ${LOG_FILE} 2>&1 </dev/null &
-
 stop:
 	pkill -f ${EXECUTABLE}
 
 update:
 	git pull origin master
 	make install
-	make start

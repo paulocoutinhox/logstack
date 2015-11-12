@@ -1,16 +1,45 @@
 # LogStack
 
-To run you need a MongoDB running on localhost:
+LogStack is a simple log repository made with Go (Golang).
 
-1. Start your mongodb
-2. Create a database with name: LogStack
-3. Execute: git clone git@github.com:prsolucoes/logstack.git  
-4. Execute: make deps  
-5. Execute: make build  
-6. Execute: make start  
-7. Open in your browser: http://localhost:8080  
+It use a simple plugin mechanism that let you use some different datasources to store and retrive logs.
 
-** The application will try connect on your localhost mongdb
+Today i have implemented MongoDB and ElasticSearch datasources, feel free to implement more :)
+
+# Configuration
+
+LogStack configuration is a simple INI file called "config.ini".
+
+Example for MongoDB as the datasource:
+
+```
+[server]
+port = 8080
+dsname = mongodb
+host = localhost
+databasename = logstack
+```
+
+Example for ElasticSearch as the datasource:
+
+```
+[server]
+port = 8080
+dsname = elasticsearch
+host = localhost
+databasename = logstack
+```
+
+# Starting
+
+1. Start your datastore server
+2. Execute: go get github.com/prsolucoes/logstack  
+3. Execute: cd $GOPATH/src/github.com/prsolucoes/logstack  
+4. Create config file (config.ini) based on some above example  
+5. Execute: make deps  
+6. Execute: make install  
+7. Execute: logstack -f=[ABSOLUTE-PATH-OF-YOUR-CONFIG-FILE]
+8. Open in your browser: http://localhost:8080  
 
 # API
 
@@ -29,9 +58,8 @@ To run you need a MongoDB running on localhost:
 
 You can use some make commands to control LogStack service, like start, stop and update from git repository.
 
-1. start  = it will kill current LogStack process and start again
-2. stop   = it will kill current LogStack process
-3. update = it will update code from git
+1. make stop   = it will kill current LogStack process
+2. make update = it will update code from git and install on GOPATH/bin directory
 
 So if you want start your server for example, you only need call "make start".
 

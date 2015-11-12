@@ -5,6 +5,7 @@ import (
 	"github.com/prsolucoes/logstack/datasource"
 	"log"
 	"gopkg.in/ini.v1"
+	"flag"
 )
 
 type WebServer struct {
@@ -34,7 +35,11 @@ func (This *WebServer) CreateBasicRoutes() {
 }
 
 func (This *WebServer) LoadConfiguration() {
-	config, err := ini.Load([]byte(""), "config.ini")
+	var configFileName = ""
+	flag.StringVar(&configFileName, "f", "config.ini", "set config.ini location")
+	flag.Parse()
+
+	config, err := ini.Load([]byte(""), configFileName)
 
 	if err == nil {
 		This.Config = config
