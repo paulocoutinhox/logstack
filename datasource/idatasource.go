@@ -2,8 +2,8 @@ package datasource
 
 import (
 	"github.com/prsolucoes/logstack/models/domain"
-	"time"
 	"gopkg.in/ini.v1"
+	"time"
 )
 
 type IDataSource interface {

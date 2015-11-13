@@ -123,34 +123,39 @@ var LogHistory = new function()
 		var filterMessageTmpToSend = (Util.isUndefined(this.filterMessageTmp) ? "" : this.filterMessageTmp);
 		
 	    this.request = $.ajax({
-		   url: '/api/log/list?token=' + this.token + "&created_at=" + lastDateTimeToSend + "&filter-message=" + filterMessageTmpToSend,
+		   url: '/api/log/list?token=' + this.token + "&created_at=" + lastDateTimeToSend + "&message=" + filterMessageTmpToSend,
 		   type: 'GET',
 		   dataType: 'json',
-		   success: function(data) {
-		       if (!Util.isUndefined(data)) 
+		   success: function(response) {
+		       if (!Util.isUndefined(response))
 		       {
-			       if (data != "" && data != null)
+			       if (response != "" && response != null)
 			       {
-				       for (var x = 0; x < data.length; x++)
-				       {
-					       if (Util.isUndefined(LogHistory.request) || LogHistory.request == null)
-					       {
-						       return;
-					       }
-					       
-					       if (!$("#log-row-" + data[x].ID).length > 0)
-					       {
-						       LogHistory.lastDateTime = Util.dateToMongoDateString(new Date(data[x].CreatedAt));
-						       LogHistory.addLog(data[x].ID, data[x].Type, data[x].Message, data[x].CreatedAt);
+                       var list = response.data.list
 
-						       if ($('#chkAutoScrollBottom').is(':checked'))
-							   {
-								   if (LogHistory.isOnBottomOfDocument)
-								   {
-									   Util.scrollToBottom();
-								   }
-							   }
-					       }
+                       if (!Util.isUndefined(list) && !Util.isNull(list))
+                       {
+                           for (var x = 0; x < list.length; x++)
+                           {
+                               if (Util.isUndefined(LogHistory.request) || LogHistory.request == null)
+                               {
+                                   return;
+                               }
+
+                               if (!$("#log-row-" + list[x].id).length > 0)
+                               {
+                                   LogHistory.lastDateTime = Util.dateToMongoDateString(new Date(list[x].created_at));
+                                   LogHistory.addLog(list[x].id, list[x].type, list[x].message, list[x].created_at);
+
+                                   if ($('#chkAutoScrollBottom').is(':checked'))
+                                   {
+                                       if (LogHistory.isOnBottomOfDocument)
+                                       {
+                                           Util.scrollToBottom();
+                                       }
+                                   }
+                               }
+                           }
 				       }
 			       }    
 			       
@@ -185,31 +190,36 @@ var LogHistory = new function()
 		   url: '/api/log/statsByType?token=' + this.token,
 		   type: 'GET',
 		   dataType: 'json',
-		   success: function(data) {
+		   success: function(response) {
 			   var showResults = false;
 
-			   if (!Util.isUndefined(data))
+			   if (!Util.isUndefined(response))
 			   {
-				   if (data != "" && data != null)
+				   if (response != "" && response != null)
 				   {
-					   for (var x = 0; x < data.length; x++)
-					   {
-					        var color = LogHistory.getColorForIndexAndType(x, data[x].type);
+				       var list = response.data.list
 
-					        chartData.push({
-							    value: data[x].quantity,
-							    label: data[x].type,
-							    color: color,
-						    });
+				       if (!Util.isUndefined(list) && !Util.isNull(list))
+				       {
+                           for (var x = 0; x < list.length; x++)
+                           {
+                                var color = LogHistory.getColorForIndexAndType(x, list[x].type);
 
-						    chartLegend += '' +
-						    '<li>' +
-						    '    <span class="chart-legend-color" style="background-color: ' + color + '"></span>' +
-						    '    <span class="chart-legend-label">' + data[x].type + ' (' + data[x].quantity + ')</span>' +
-						    '</li>';
+                                chartData.push({
+                                    value: list[x].quantity,
+                                    label: list[x].type,
+                                    color: color,
+                                });
 
-						    showResults = true;
-					   }
+                                chartLegend += '' +
+                                '<li>' +
+                                '    <span class="chart-legend-color" style="background-color: ' + color + '"></span>' +
+                                '    <span class="chart-legend-label">' + list[x].type + ' (' + list[x].quantity + ')</span>' +
+                                '</li>';
+
+                                showResults = true;
+                           }
+                       }
 				   }
 			   }
 
@@ -310,7 +320,6 @@ var LogHistory = new function()
 		$('#filterMessage').val('');
 		this.resetRequest();		
 		this.clear();
-		this.showLoadingResults();
 	}
 	
 	this.showLogFilters = function(show)
@@ -335,7 +344,7 @@ var LogHistory = new function()
 	
 	this.resetRequest = function()
 	{
-		if (!Util.isUndefined(this.request))
+		if (!Util.isUndefined(this.request) && !Util.isNull(this.request))
 		{	
 			this.request.abort();
 			this.request = null;
@@ -364,7 +373,10 @@ var LogHistory = new function()
 		}
 		else
 		{
-		    prefix += "-";
+		    if (prefix != "")
+            {
+                prefix += "-";
+            }
 		}
 
 		if ($('#' + prefix + 'results').is(':hidden'))
@@ -384,7 +396,10 @@ var LogHistory = new function()
 		}
 		else
 		{
-		    prefix += "-";
+		    if (prefix != "")
+            {
+                prefix += "-";
+            }
 		}
 
 		if ($('#' + prefix + 'no-results').is(':hidden'))
@@ -404,7 +419,10 @@ var LogHistory = new function()
 		}
 		else
 		{
-		    prefix += "-";
+		    if (prefix != "")
+            {
+                prefix += "-";
+            }
 		}
 
 		if ($('#' + prefix + 'loading-results').is(':hidden'))
@@ -424,7 +442,10 @@ var LogHistory = new function()
 		}
 		else
 		{
-		    prefix += "-";
+		    if (prefix != "")
+		    {
+		        prefix += "-";
+		    }
 		}
 
 		if ($('.log-row').length > 0)

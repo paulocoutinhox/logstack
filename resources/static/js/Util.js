@@ -74,6 +74,11 @@ var Util = new function()
 		return ('undefined' == typeof data);
 	}
 
+	this.isNull = function(data)
+	{
+		return (null == data);
+	}
+
 	this.showProgressWindow = function(message)
 	{
 		if (Util.isUndefined(message))

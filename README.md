@@ -16,8 +16,8 @@ Example for MongoDB as the datasource:
 [server]
 port = 8080
 dsname = mongodb
-host = localhost
-databasename = logstack
+dshost = localhost
+dscontainer = logstack
 ```
 
 Example for ElasticSearch as the datasource:
@@ -26,8 +26,8 @@ Example for ElasticSearch as the datasource:
 [server]
 port = 8080
 dsname = elasticsearch
-host = localhost
-databasename = logstack
+dshost = localhost
+dscontainer = logstack
 ```
 
 # Starting
@@ -38,7 +38,7 @@ databasename = logstack
 4. Create config file (config.ini) based on some above example  
 5. Execute: make deps  
 6. Execute: make install  
-7. Execute: logstack -f=[ABSOLUTE-PATH-OF-YOUR-CONFIG-FILE]
+7. Execute: logstack -f=config.ini
 8. Open in your browser: http://localhost:8080  
 
 # API
@@ -78,7 +78,11 @@ You can leave the stats charts opened in one browser window for example and see 
 
 [![Main interface](https://github.com/prsolucoes/logstack/raw/master/screenshots/logstack1.png)](http://github.com/prsolucoes/logstack)
 
-[![Stats](https://github.com/prsolucoes/logstack/raw/master/screenshots/logstack2.png)](http://github.com/prsolucoes/logstack)
+[![Token](https://github.com/prsolucoes/logstack/raw/master/screenshots/logstack2.png)](http://github.com/prsolucoes/logstack)
+
+[![Logs](https://github.com/prsolucoes/logstack/raw/master/screenshots/logstack3.png)](http://github.com/prsolucoes/logstack)
+
+[![Stats](https://github.com/prsolucoes/logstack/raw/master/screenshots/logstack4.png)](http://github.com/prsolucoes/logstack)
 
 # Author WebSite
 

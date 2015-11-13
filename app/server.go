@@ -1,11 +1,11 @@
 package app
 
 import (
+	"flag"
 	"github.com/gin-gonic/gin"
 	"github.com/prsolucoes/logstack/datasource"
-	"log"
 	"gopkg.in/ini.v1"
-	"flag"
+	"log"
 )
 
 type WebServer struct {

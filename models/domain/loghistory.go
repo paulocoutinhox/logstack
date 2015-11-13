@@ -10,5 +10,5 @@ type LogHistory struct {
 	Token     string        `bson:"token" json:"token"`
 	Type      string        `bson:"type" json:"type"`
 	Message   string        `bson:"message" json:"message"`
-	CreatedAt time.Time     `bson:"createdAt" json:"created_at"`
+	CreatedAt time.Time     `bson:"created_at" json:"created_at"`
 }
