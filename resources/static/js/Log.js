@@ -1,4 +1,4 @@
-var LogHistory = new function()
+var Log = new function()
 {
 
 	var token                               = "";
@@ -33,13 +33,13 @@ var LogHistory = new function()
 		$('#filterMessage').on('keyup',function(event) {
 			if(event.keyCode == 13)
 		    {
-			    LogHistory.applyFilters();
+			    Log.applyFilters();
 		    }
 		});
 		
-		LogHistory.getToken();
-		LogHistory.startAutoGetNewest();
-		LogHistory.startAutoClean();
+		Log.getToken();
+		Log.startAutoGetNewest();
+		Log.startAutoClean();
 	}
 
 	this.addLog = function(id, type, message, createdAt)
@@ -85,7 +85,7 @@ var LogHistory = new function()
 		*/
 
 		var html = '' +
-		'<div id="log-row-' + id + '" class="panel ' + typeHtml + ' log-row log-row-type-' + type.toLowerCase() + '" onclick="LogHistory.showDetails(\'' + id + '\')">' +
+		'<div id="log-row-' + id + '" class="panel ' + typeHtml + ' log-row log-row-type-' + type.toLowerCase() + '" onclick="Log.showDetails(\'' + id + '\')">' +
 		'    <div class="panel-heading">' +
 		'        <h3 class="panel-title">' +
 		'            <p>Type: <span id="log-data-type-' + id + '">' + type + '</span></p>' +
@@ -137,19 +137,19 @@ var LogHistory = new function()
                        {
                            for (var x = 0; x < list.length; x++)
                            {
-                               if (Util.isUndefined(LogHistory.request) || LogHistory.request == null)
+                               if (Util.isUndefined(Log.request) || Log.request == null)
                                {
                                    return;
                                }
 
                                if (!$("#log-row-" + list[x].id).length > 0)
                                {
-                                   LogHistory.lastDateTime = Util.dateToMongoDateString(new Date(list[x].created_at));
-                                   LogHistory.addLog(list[x].id, list[x].type, list[x].message, list[x].created_at);
+                                   Log.lastDateTime = Util.dateToMongoDateString(new Date(list[x].created_at));
+                                   Log.addLog(list[x].id, list[x].type, list[x].message, list[x].created_at);
 
                                    if ($('#chkAutoScrollBottom').is(':checked'))
                                    {
-                                       if (LogHistory.isOnBottomOfDocument)
+                                       if (Log.isOnBottomOfDocument)
                                        {
                                            Util.scrollToBottom();
                                        }
@@ -159,18 +159,18 @@ var LogHistory = new function()
 				       }
 			       }    
 			       
-			       if (LogHistory.firstTime)
+			       if (Log.firstTime)
 			       {
-				       LogHistory.firstTime = false;
+				       Log.firstTime = false;
 			       }
 		       }
 		       
 		       isGettingNewest = false;
-		       LogHistory.showResultsOrNoResultsByLogsQuantity();
+		       Log.showResultsOrNoResultsByLogsQuantity();
 		   },
 		   error: function() {
 		      isGettingNewest = false;
-		      LogHistory.showResultsOrNoResultsByLogsQuantity();
+		      Log.showResultsOrNoResultsByLogsQuantity();
 		   }
 		});
 	}
@@ -203,7 +203,7 @@ var LogHistory = new function()
 				       {
                            for (var x = 0; x < list.length; x++)
                            {
-                                var color = LogHistory.getColorForIndexAndType(x, list[x].type);
+                                var color = Log.getColorForIndexAndType(x, list[x].type);
 
                                 chartData.push({
                                     value: list[x].quantity,
@@ -227,7 +227,7 @@ var LogHistory = new function()
 			   {
 			   	   $('#chart-legend').html(chartLegend);
 
-			   	   LogHistory.showResults('chart');
+			   	   Log.showResults('chart');
 
 			       Chart.defaults.global.responsive = true;
 
@@ -240,13 +240,13 @@ var LogHistory = new function()
 			   }
 			   else
 			   {
-			   	   LogHistory.showNoResults('chart');
+			   	   Log.showNoResults('chart');
 			   }
 
 			   isGettingNewestLogStatsByTypeChart = false;
 		   },
 		   error: function() {
-			   LogHistory.showNoResults('chart');
+			   Log.showNoResults('chart');
 			   isGettingNewestLogStatsByTypeChart = false;
 		   }
 		});
@@ -260,23 +260,23 @@ var LogHistory = new function()
 	this.startAutoGetNewest = function()
 	{
 		var seconds = 1;
-		setInterval(function(){ LogHistory.getNewest(); }, (seconds * 1000));
+		setInterval(function(){ Log.getNewest(); }, (seconds * 1000));
 	}
 
 	this.startAutoGetNewestLogStatsByTypeChart = function()
 	{
-		LogHistory.getToken();
-		LogHistory.initializeColorlist();
+		Log.getToken();
+		Log.initializeColorlist();
 
 		var seconds = 5;
-		LogHistory.getNewestLogStatsByTypeChart();
-		setInterval(function(){ LogHistory.getNewestLogStatsByTypeChart(); }, (seconds * 1000));
+		Log.getNewestLogStatsByTypeChart();
+		setInterval(function(){ Log.getNewestLogStatsByTypeChart(); }, (seconds * 1000));
 	}
 
 	this.startAutoClean = function()
 	{
 		var seconds = 10;
-		setInterval(function(){ LogHistory.removeOldLogsFromPage(); }, (seconds * 1000));
+		setInterval(function(){ Log.removeOldLogsFromPage(); }, (seconds * 1000));
 	}
 
 	this.clear = function()
@@ -296,7 +296,7 @@ var LogHistory = new function()
 		   success: function(data) {
 			   if ($('#chkAutoScrollBottom').is(':checked')) 
 		       {
-			       LogHistory.clear();
+			       Log.clear();
 			       Util.scrollToBottom();
 		       }
 		   },
@@ -463,7 +463,7 @@ var LogHistory = new function()
 	    Util.redirect("/log/statsByType?token=" + this.token);
 	}
 
-	this.redirectToLogHistory = function()
+	this.redirectToLogIndex = function()
 	{
 	    Util.redirect("/log/index?token=" + this.token);
 	}

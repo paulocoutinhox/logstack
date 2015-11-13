@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-type LogHistory struct {
+type Log struct {
 	ID        bson.ObjectId `bson:"_id,omitempty" json:"id"`
 	Token     string        `bson:"token" json:"token"`
 	Type      string        `bson:"type" json:"type"`

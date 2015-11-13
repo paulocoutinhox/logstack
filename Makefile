@@ -21,7 +21,8 @@ format:
 	${GOFMT} datasource/idatasource.go
 	${GOFMT} datasource/mongodb.go
 	${GOFMT} datasource/elasticsearch.go
-	${GOFMT} models/domain/loghistory.go
+	${GOFMT} models/domain/log.go
+	${GOFMT} models/domain/logstat.go
 	${GOFMT} models/util/util.go
 
 test:

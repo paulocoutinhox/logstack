@@ -5,6 +5,7 @@ import (
 	"gopkg.in/ini.v1"
 	"time"
 	"gopkg.in/olivere/elastic.v3"
+	"errors"
 )
 
 type ElasticSearchDataSource struct {
@@ -64,7 +65,7 @@ func (This *ElasticSearchDataSource) Prepare() error {
 	return nil
 }
 
-func (This *ElasticSearchDataSource) InsertLog(log *models.LogHistory) error {
+func (This *ElasticSearchDataSource) InsertLog(log *models.Log) error {
 	_, err := This.Client.Index().
 	Index(This.Index).
 	Type("log").
@@ -78,16 +79,44 @@ func (This *ElasticSearchDataSource) InsertLog(log *models.LogHistory) error {
 	return nil
 }
 
-func (This *ElasticSearchDataSource) LogList(token, message string, createdAt time.Time) ([]models.LogHistory, error) {
+func (This *ElasticSearchDataSource) LogList(token, message string, createdAt time.Time) ([]models.Log, error) {
 	return nil, nil
 }
 
-func (This *ElasticSearchDataSource) DeleteAllLogHistoryByToken(token string) error {
+func (This *ElasticSearchDataSource) DeleteAllLogsByToken(token string) error {
 	return nil
 }
 
-func (This *ElasticSearchDataSource) LogStatsByType(token string) ([]interface{}, error) {
-	return nil, nil
+func (This *ElasticSearchDataSource) LogStatsByType(token string) ([]models.LogStats, error) {
+	//query := elastic.NewTermQuery("token", token)
+	query := elastic.NewMatchQuery("token", token)
+
+	builder := This.Client.Search().Index(This.Index).Query(query)
+	builder = builder.Aggregation("aggs-type", elastic.NewTermsAggregation().Field("type"))
+
+	result, err := builder.Do()
+
+	if err != nil {
+		return nil, err
+	}
+
+	agg, found := result.Aggregations.Terms("aggs-type")
+
+	if !found {
+		return nil, errors.New("aggregation not found on result")
+	}
+
+	logStatList := []models.LogStats{}
+
+	for _, bucket := range agg.Buckets {
+		logStat := models.LogStats{}
+		logStat.Type = bucket.Key.(string)
+		logStat.Quantity = bucket.DocCount
+
+		logStatList = append(logStatList, logStat)
+	}
+
+	return logStatList, nil
 }
 
 func (This *ElasticSearchDataSource) createIndex() {

@@ -11,6 +11,7 @@ import (
 type MongoDBDataSource struct {
 	Session    *mgo.Session
 	Host       string
+	Database   string
 	Collection string
 }
 
@@ -25,7 +26,8 @@ func (This *MongoDBDataSource) LoadConfig(config *ini.File) error {
 
 	if err != nil {
 		This.Host = "localhost"
-		This.Collection = "logstack"
+		This.Database = "logstack"
+		This.Collection = "log"
 		return nil
 	}
 
@@ -44,7 +46,8 @@ func (This *MongoDBDataSource) LoadConfig(config *ini.File) error {
 	}
 
 	This.Host = host
-	This.Collection = dataBaseName
+	This.Database = dataBaseName
+	This.Collection = "log"
 
 	return nil
 }
@@ -66,22 +69,22 @@ func (This *MongoDBDataSource) Prepare() error {
 	return nil
 }
 
-func (This *MongoDBDataSource) InsertLog(log *models.LogHistory) error {
+func (This *MongoDBDataSource) InsertLog(log *models.Log) error {
 	session := This.Session.Clone()
 	defer session.Close()
 
-	coll := session.DB(This.Collection).C("loghistory")
+	coll := session.DB(This.Database).C(This.Collection)
 	err := coll.Insert(log)
 	return err
 }
 
-func (This *MongoDBDataSource) LogList(token, message string, createdAt time.Time) ([]models.LogHistory, error) {
+func (This *MongoDBDataSource) LogList(token, message string, createdAt time.Time) ([]models.Log, error) {
 	session := This.Session.Clone()
 	defer session.Close()
 
-	coll := session.DB(This.Collection).C("loghistory")
+	coll := session.DB(This.Database).C(This.Collection)
 
-	var results []models.LogHistory
+	var results []models.Log
 	var conditions = bson.M{}
 
 	conditions["token"] = token
@@ -92,15 +95,15 @@ func (This *MongoDBDataSource) LogList(token, message string, createdAt time.Tim
 		conditions["message"] = bson.RegEx{Pattern: message, Options: "i"}
 	}
 
-	err := coll.Find(conditions).Sort("createdAt").All(&results)
+	err := coll.Find(conditions).Sort("created_at").All(&results)
 	return results, err
 }
 
-func (This *MongoDBDataSource) DeleteAllLogHistoryByToken(token string) error {
+func (This *MongoDBDataSource) DeleteAllLogsByToken(token string) error {
 	session := This.Session.Clone()
 	defer session.Close()
 
-	coll := session.DB(This.Collection).C("loghistory")
+	coll := session.DB(This.Database).C(This.Collection)
 
 	_, err := coll.RemoveAll(bson.M{
 		"token": token,
@@ -109,13 +112,13 @@ func (This *MongoDBDataSource) DeleteAllLogHistoryByToken(token string) error {
 	return err
 }
 
-func (This *MongoDBDataSource) LogStatsByType(token string) ([]interface{}, error) {
+func (This *MongoDBDataSource) LogStatsByType(token string) ([]models.LogStats, error) {
 	session := This.Session.Clone()
 	defer session.Close()
 
-	coll := session.DB(This.Collection).C("loghistory")
+	coll := session.DB(This.Database).C(This.Collection)
 
-	var results []interface{}
+	var results []models.LogStats
 
 	pipe := coll.Pipe([]bson.M{
 		bson.M{
@@ -147,11 +150,11 @@ func (This *MongoDBDataSource) LogStatsByType(token string) ([]interface{}, erro
 }
 
 func (This *MongoDBDataSource) createCollections() {
-	This.Session.DB(This.Collection).C("loghistory").Create(&mgo.CollectionInfo{DisableIdIndex: false, ForceIdIndex: true})
+	This.Session.DB(This.Database).C(This.Collection).Create(&mgo.CollectionInfo{DisableIdIndex: false, ForceIdIndex: true})
 }
 
 func (This *MongoDBDataSource) createIndexes() {
-	This.Session.DB(This.Collection).C("loghistory").EnsureIndex(mgo.Index{Key: []string{"token"}, Unique: false, DropDups: true, Background: false, Sparse: true})
-	This.Session.DB(This.Collection).C("loghistory").EnsureIndex(mgo.Index{Key: []string{"type"}, Unique: false, DropDups: true, Background: false, Sparse: true})
-	This.Session.DB(This.Collection).C("loghistory").EnsureIndex(mgo.Index{Key: []string{"created_at"}, Unique: false, DropDups: true, Background: false, Sparse: true})
+	This.Session.DB(This.Database).C(This.Collection).EnsureIndex(mgo.Index{Key: []string{"token"}, Unique: false, DropDups: true, Background: false, Sparse: true})
+	This.Session.DB(This.Database).C(This.Collection).EnsureIndex(mgo.Index{Key: []string{"type"}, Unique: false, DropDups: true, Background: false, Sparse: true})
+	This.Session.DB(This.Database).C(This.Collection).EnsureIndex(mgo.Index{Key: []string{"created_at"}, Unique: false, DropDups: true, Background: false, Sparse: true})
 }

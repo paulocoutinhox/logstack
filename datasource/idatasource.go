@@ -11,8 +11,8 @@ type IDataSource interface {
 	LoadConfig(config *ini.File) error
 	Connect() error
 	Prepare() error
-	InsertLog(log *models.LogHistory) error
-	LogList(token, message string, createdAt time.Time) ([]models.LogHistory, error)
-	DeleteAllLogHistoryByToken(token string) error
-	LogStatsByType(token string) ([]interface{}, error)
+	InsertLog(log *models.Log) error
+	LogList(token, message string, createdAt time.Time) ([]models.Log, error)
+	DeleteAllLogsByToken(token string) error
+	LogStatsByType(token string) ([]models.LogStats, error)
 }

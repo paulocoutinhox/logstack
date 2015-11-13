@@ -21,7 +21,7 @@ func (This *APIController) Register() {
 }
 
 func (This *APIController) APILogAdd(c *gin.Context) {
-	log := &models.LogHistory{}
+	log := &models.Log{}
 	log.Token = c.PostForm("token")
 	log.Type = strings.ToLower(c.PostForm("type"))
 	log.Message = c.PostForm("message")
@@ -68,7 +68,7 @@ func (This *APIController) APILogList(c *gin.Context) {
 func (This *APIController) APILogDeleteAll(c *gin.Context) {
 	token := c.Query("token")
 
-	err := app.Server.DS.DeleteAllLogHistoryByToken(token)
+	err := app.Server.DS.DeleteAllLogsByToken(token)
 
 	response := new(gowebresponse.WebResponse)
 

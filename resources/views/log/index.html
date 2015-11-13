@@ -7,13 +7,13 @@
 		<h4>FILTERS</h4>
 
 		<div class="form-group">
-			<label for="filter-message">Message</label>
+			<label for="filterMessage">Message</label>
 			<input type="text" class="form-control" id="filterMessage" placeholder="Type query for message and apply"
 				   autocomplete="off">
 		</div>
-		<button type="button" class="btn btn-primary" onclick="LogHistory.showLogFilters(false)">Hide</button>
-		<button type="button" class="btn btn-primary" onclick="LogHistory.clearLogFilters()">Clear</button>
-		<button type="button" class="btn btn-success" onclick="LogHistory.applyFilters()">Apply</button>
+		<button type="button" class="btn btn-primary" onclick="Log.showLogFilters(false)">Hide</button>
+		<button type="button" class="btn btn-primary" onclick="Log.clearLogFilters()">Clear</button>
+		<button type="button" class="btn btn-success" onclick="Log.applyFilters()">Apply</button>
 
 	</div>
 
@@ -71,16 +71,16 @@
 				<hr/>
 
 				<div class="btn-group" role="group" aria-label="...">
-					<button type="button" class="btn btn-primary" onclick="LogHistory.redirectToLogStatsByType()">Go to stats by type</button>
+					<button type="button" class="btn btn-primary" onclick="Log.redirectToLogStatsByType()">Go to stats by type</button>
 				</div>
 
 				<hr/>
 
 				<div class="btn-group" role="group" aria-label="...">
-					<button type="button" class="btn btn-primary" onclick="LogHistory.showLogFilters(true)">Show
+					<button type="button" class="btn btn-primary" onclick="Log.showLogFilters(true)">Show
 						filters
 					</button>
-					<button type="button" class="btn btn-primary" onclick="LogHistory.showLogFilters(false)">Hide
+					<button type="button" class="btn btn-primary" onclick="Log.showLogFilters(false)">Hide
 						filters
 					</button>
 				</div>
@@ -88,8 +88,8 @@
 				<hr/>
 
 				<div class="btn-group" role="group" aria-label="...">
-					<button type="button" class="btn btn-danger" onclick="LogHistory.clear()">Clear list</button>
-					<button type="button" class="btn btn-danger" onclick="LogHistory.deleteAllByToken()">Delete logs and
+					<button type="button" class="btn btn-danger" onclick="Log.clear()">Clear list</button>
+					<button type="button" class="btn btn-danger" onclick="Log.deleteAllByToken()">Delete logs and
 						clear
 					</button>
 				</div>
@@ -139,7 +139,7 @@
 <!-- STARTUP -->
 <script>
 	$(document).ready(function() {
-		LogHistory.initialize();
+		Log.initialize();
 	});
 </script>
 
