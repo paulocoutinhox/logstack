@@ -66,7 +66,7 @@ So if you want start your server for example, you only need call "make start".
 # Alternative method to Build and Start project
 
 1. go build
-2. ./logstack
+2. ./logstack -f=config.ini
 
 # Updates In Real Time
 
