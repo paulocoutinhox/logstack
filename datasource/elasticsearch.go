@@ -80,7 +80,24 @@ func (This *ElasticSearchDataSource) InsertLog(log *models.Log) error {
 }
 
 func (This *ElasticSearchDataSource) LogList(token, message string, createdAt time.Time) ([]models.Log, error) {
-	return nil, nil
+	var results []models.Log
+
+	query := elastic.NewBoolQuery()
+	query = query.Must(elastic.NewTermQuery("token", token))
+
+	if message == "" {
+		query = query.Must(elastic.NewRangeQuery("created_at").Gt(createdAt))
+	} else {
+		query = query.Must(elastic.NewMatchQuery("message", message))
+	}
+
+	_, err := This.Client.Search().Index(This.Index).Query(query).Do()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return results, err
 }
 
 func (This *ElasticSearchDataSource) DeleteAllLogsByToken(token string) error {
