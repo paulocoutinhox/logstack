@@ -59,7 +59,7 @@ dscontainer = logstack
 You can use some make commands to control LogStack service, like start, stop and update from git repository.
 
 1. make stop   = it will kill current LogStack process
-2. make update = it will update code from git and install on GOPATH/bin directory
+2. make update = it will update code from git and install on $GOPATH/bin directory
 
 So if you want start your server for example, you only need call "make start".
 
