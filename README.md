@@ -16,7 +16,7 @@ Example for MongoDB as the datasource:
 [server]
 port = 8080
 dsname = mongodb
-dshost = localhost
+dshost = 127.0.0.1
 dscontainer = logstack
 ```
 
@@ -26,7 +26,7 @@ Example for ElasticSearch as the datasource:
 [server]
 port = 8080
 dsname = elasticsearch
-dshost = localhost
+dshost = http://127.0.0.1:9200
 dscontainer = logstack
 ```
 

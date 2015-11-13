@@ -19,7 +19,8 @@ format:
 	${GOFMT} controllers/home.go
 	${GOFMT} controllers/log.go
 	${GOFMT} datasource/idatasource.go
-	${GOFMT} datasource/mongods.go
+	${GOFMT} datasource/mongodb.go
+	${GOFMT} datasource/elasticsearch.go
 	${GOFMT} models/domain/loghistory.go
 	${GOFMT} models/util/util.go
 

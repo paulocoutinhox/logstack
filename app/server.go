@@ -73,7 +73,9 @@ func (This *WebServer) CreateDataSource() {
 
 	// create datasource from config
 	if dsname == "mongodb" {
-		This.DS = new(datasource.MongoDataSource)
+		This.DS = new(datasource.MongoDBDataSource)
+	} else if dsname == "elasticsearch" {
+		This.DS = new(datasource.ElasticSearchDataSource)
 	} else {
 		log.Fatal("No datasource defined or is invalid")
 	}

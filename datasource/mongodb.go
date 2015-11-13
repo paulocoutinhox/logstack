@@ -8,17 +8,17 @@ import (
 	"time"
 )
 
-type MongoDataSource struct {
+type MongoDBDataSource struct {
 	Session    *mgo.Session
 	Host       string
 	Collection string
 }
 
-func (This *MongoDataSource) Name() string {
-	return "mongods"
+func (This *MongoDBDataSource) Name() string {
+	return "mongodb"
 }
 
-func (This *MongoDataSource) LoadConfig(config *ini.File) error {
+func (This *MongoDBDataSource) LoadConfig(config *ini.File) error {
 	var err error
 
 	serverSection, err := config.GetSection("server")
@@ -49,7 +49,7 @@ func (This *MongoDataSource) LoadConfig(config *ini.File) error {
 	return nil
 }
 
-func (This *MongoDataSource) Connect() error {
+func (This *MongoDBDataSource) Connect() error {
 	session, err := mgo.Dial("mongodb://" + This.Host)
 
 	if err != nil {
@@ -60,13 +60,13 @@ func (This *MongoDataSource) Connect() error {
 	return nil
 }
 
-func (This *MongoDataSource) Prepare() error {
+func (This *MongoDBDataSource) Prepare() error {
 	This.createCollections()
 	This.createIndexes()
 	return nil
 }
 
-func (This *MongoDataSource) InsertLog(log *models.LogHistory) error {
+func (This *MongoDBDataSource) InsertLog(log *models.LogHistory) error {
 	session := This.Session.Clone()
 	defer session.Close()
 
@@ -75,7 +75,7 @@ func (This *MongoDataSource) InsertLog(log *models.LogHistory) error {
 	return err
 }
 
-func (This *MongoDataSource) LogList(token, message string, createdAt time.Time) ([]models.LogHistory, error) {
+func (This *MongoDBDataSource) LogList(token, message string, createdAt time.Time) ([]models.LogHistory, error) {
 	session := This.Session.Clone()
 	defer session.Close()
 
@@ -96,7 +96,7 @@ func (This *MongoDataSource) LogList(token, message string, createdAt time.Time)
 	return results, err
 }
 
-func (This *MongoDataSource) DeleteAllLogHistoryByToken(token string) error {
+func (This *MongoDBDataSource) DeleteAllLogHistoryByToken(token string) error {
 	session := This.Session.Clone()
 	defer session.Close()
 
@@ -109,7 +109,7 @@ func (This *MongoDataSource) DeleteAllLogHistoryByToken(token string) error {
 	return err
 }
 
-func (This *MongoDataSource) LogStatsByType(token string) ([]interface{}, error) {
+func (This *MongoDBDataSource) LogStatsByType(token string) ([]interface{}, error) {
 	session := This.Session.Clone()
 	defer session.Close()
 
@@ -146,11 +146,11 @@ func (This *MongoDataSource) LogStatsByType(token string) ([]interface{}, error)
 	return results, err
 }
 
-func (This *MongoDataSource) createCollections() {
+func (This *MongoDBDataSource) createCollections() {
 	This.Session.DB(This.Collection).C("loghistory").Create(&mgo.CollectionInfo{DisableIdIndex: false, ForceIdIndex: true})
 }
 
-func (This *MongoDataSource) createIndexes() {
+func (This *MongoDBDataSource) createIndexes() {
 	This.Session.DB(This.Collection).C("loghistory").EnsureIndex(mgo.Index{Key: []string{"token"}, Unique: false, DropDups: true, Background: false, Sparse: true})
 	This.Session.DB(This.Collection).C("loghistory").EnsureIndex(mgo.Index{Key: []string{"type"}, Unique: false, DropDups: true, Background: false, Sparse: true})
 	This.Session.DB(This.Collection).C("loghistory").EnsureIndex(mgo.Index{Key: []string{"created_at"}, Unique: false, DropDups: true, Background: false, Sparse: true})
