@@ -88,7 +88,6 @@ func (This *ElasticSearchDataSource) DeleteAllLogsByToken(token string) error {
 }
 
 func (This *ElasticSearchDataSource) LogStatsByType(token string) ([]models.LogStats, error) {
-	//query := elastic.NewTermQuery("token", token)
 	query := elastic.NewMatchQuery("token", token)
 
 	builder := This.Client.Search().Index(This.Index).Query(query)
