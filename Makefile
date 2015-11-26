@@ -37,6 +37,10 @@ deps:
 stop:
 	pkill -f ${EXECUTABLE}
 
+start:
+	make stop
+	nohup ${EXECUTABLE} >> ${LOG_FILE} 2>&1 </dev/null &
+
 update:
 	git pull origin master
 	make install
