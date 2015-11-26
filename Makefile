@@ -38,7 +38,8 @@ stop:
 	pkill -f ${EXECUTABLE}
 
 start:
-	make stop
+	-make stop
+	cd ${GOPATH}/src/github.com/prsolucoes/logstack
 	nohup ${EXECUTABLE} >> ${LOG_FILE} 2>&1 </dev/null &
 
 update:
