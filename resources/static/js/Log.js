@@ -741,17 +741,17 @@ var Log = new function()
 
 		this.colorListByType.push("error", "fatal", "info", "information", "warn", "warning", "verbose", "debug", "trace", "echo", "success");
 
-		this.colorListByType["error"]       = '#f44336';
-		this.colorListByType["fatal"]       = '#b71c1c';
-		this.colorListByType["info"]        = '#2196F3';
+		this.colorListByType["error"]       = '#e74c3c';
+		this.colorListByType["fatal"]       = '#2c3e50';
+		this.colorListByType["info"]        = '#3498db';
 		this.colorListByType["information"] = this.colorListByType["info"];
-		this.colorListByType["warn"]        = '#FFEB3B';
+		this.colorListByType["warn"]        = '#f1c40f';
 		this.colorListByType["warning"]     = this.colorListByType["warn"];
-		this.colorListByType["verbose"]     = '#42A5F5';
-		this.colorListByType["debug"]       = '#4FC3F7';
-		this.colorListByType["trace"]       = '#4DD0E1';
-		this.colorListByType["echo"]        = '#81C784';
-		this.colorListByType["success"]     = '#43A047';
+		this.colorListByType["verbose"]     = '#9b59b6';
+		this.colorListByType["debug"]       = '#e67e22';
+		this.colorListByType["trace"]       = '#16a085';
+		this.colorListByType["echo"]        = '#bdc3c7';
+		this.colorListByType["success"]     = '#2ecc71';
 	}
 
 	this.getColorForIndexAndType = function(index, type)

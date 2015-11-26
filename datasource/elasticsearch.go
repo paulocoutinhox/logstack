@@ -6,12 +6,16 @@ import (
 	"time"
 	"gopkg.in/olivere/elastic.v3"
 	"errors"
+	"fmt"
+	"log"
+	"encoding/json"
 )
 
 type ElasticSearchDataSource struct {
 	Client *elastic.Client
 	Host   string
 	Index  string
+	Type   string
 }
 
 func (This *ElasticSearchDataSource) Name() string {
@@ -22,6 +26,8 @@ func (This *ElasticSearchDataSource) LoadConfig(config *ini.File) error {
 	var err error
 
 	serverSection, err := config.GetSection("server")
+
+	This.Type = "log"
 
 	if err != nil {
 		This.Host = "localhost"
@@ -62,14 +68,18 @@ func (This *ElasticSearchDataSource) Connect() error {
 
 func (This *ElasticSearchDataSource) Prepare() error {
 	This.createIndex()
+	This.createMappings()
 	return nil
 }
 
-func (This *ElasticSearchDataSource) InsertLog(log *models.Log) error {
+func (This *ElasticSearchDataSource) InsertLog(newLog *models.Log) error {
+	createAt := time.Now().UTC().Format("2006-01-02T15:04:05")
+	newLog.CreatedAt = createAt
+
 	_, err := This.Client.Index().
 	Index(This.Index).
-	Type("log").
-	BodyJson(log).
+	Type(This.Type).
+	BodyJson(newLog).
 	Do()
 
 	if err != nil {
@@ -83,18 +93,39 @@ func (This *ElasticSearchDataSource) LogList(token, message string, createdAt ti
 	var results []models.Log
 
 	query := elastic.NewBoolQuery()
-	query = query.Must(elastic.NewTermQuery("token", token))
+	query = query.Filter(elastic.NewTermsQuery("token", token))
 
 	if message == "" {
-		query = query.Must(elastic.NewRangeQuery("created_at").Gt(createdAt))
+		createdAtStr := createdAt.Format("2006-01-02T15:04:05")
+		query = query.Must(elastic.NewRangeQuery("created_at").Gt(createdAtStr))
 	} else {
 		query = query.Must(elastic.NewMatchQuery("message", message))
 	}
 
-	_, err := This.Client.Search().Index(This.Index).Query(query).Do()
+	source, err := query.Source()
+	log.Printf("Query: %v", source)
+
+	searchResult, err := This.Client.Search().Index(This.Index).Query(query).Do()
 
 	if err != nil {
 		return nil, err
+	}
+
+	for _, hit := range searchResult.Hits.Hits {
+		if hit.Index != This.Index {
+			return nil, errors.New(fmt.Sprintf("Expected SearchResult.Hits.Hit.Index = %q, but got %q", This.Index, hit.Index))
+		}
+
+		var log models.Log
+
+		err := json.Unmarshal(*hit.Source, &log)
+
+		if err != nil {
+			return nil, err
+		}
+
+		log.ID = hit.Id
+		results = append(results, log)
 	}
 
 	return results, err
@@ -137,4 +168,30 @@ func (This *ElasticSearchDataSource) LogStatsByType(token string) ([]models.LogS
 
 func (This *ElasticSearchDataSource) createIndex() {
 	_, _ = This.Client.CreateIndex(This.Index).Do()
+}
+
+func (This *ElasticSearchDataSource) createMappings() {
+	mapping := `
+	{
+        "log" : {
+            "properties" : {
+                "token" : {
+                    "type" : "string",
+                    "index" : "not_analyzed"
+                },
+                "type" : {
+                    "type" : "string",
+                    "index" : "not_analyzed"
+                },
+                "created_at" : {
+                    "type" : "date",
+                    "format" : "yyyy-MM-dd'T'HH:mm:ss",
+                    "null_value": "now"
+                }
+            }
+        }
+    }
+	`
+
+	_, _ = This.Client.PutMapping().Index(This.Index).Type(This.Type).BodyString(mapping).Do()
 }

@@ -25,7 +25,7 @@ func (This *APIController) APILogAdd(c *gin.Context) {
 	log.Token = c.PostForm("token")
 	log.Type = strings.ToLower(c.PostForm("type"))
 	log.Message = c.PostForm("message")
-	log.CreatedAt = time.Now()
+	log.CreatedAt = ""
 
 	err := app.Server.DS.InsertLog(log)
 

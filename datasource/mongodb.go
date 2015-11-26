@@ -15,6 +15,14 @@ type MongoDBDataSource struct {
 	Collection string
 }
 
+type MongoDBLog struct {
+	ID        bson.ObjectId `bson:"_id,omitempty"`
+	Token     string        `bson:"token"`
+	Type      string        `bson:"type"`
+	Message   string        `bson:"message"`
+	CreatedAt string        `bson:"created_at"`
+}
+
 func (This *MongoDBDataSource) Name() string {
 	return "mongodb"
 }
@@ -69,12 +77,22 @@ func (This *MongoDBDataSource) Prepare() error {
 	return nil
 }
 
-func (This *MongoDBDataSource) InsertLog(log *models.Log) error {
+func (This *MongoDBDataSource) InsertLog(newLog *models.Log) error {
+	createAt := time.Now().UTC().Format("2006-01-02T15:04:05")
+	newLog.CreatedAt = createAt
+
+	mongoDBLog := &MongoDBLog{
+		Token     : newLog.Token,
+		Type      : newLog.Type,
+		Message   : newLog.Message,
+		CreatedAt : newLog.CreatedAt,
+	}
+
 	session := This.Session.Clone()
 	defer session.Close()
 
 	coll := session.DB(This.Database).C(This.Collection)
-	err := coll.Insert(log)
+	err := coll.Insert(mongoDBLog)
 	return err
 }
 
@@ -90,12 +108,31 @@ func (This *MongoDBDataSource) LogList(token, message string, createdAt time.Tim
 	conditions["token"] = token
 
 	if message == "" {
-		conditions["created_at"] = bson.M{"$gt": createdAt}
+		createdAtStr := createdAt.Format("2006-01-02T15:04:05")
+		conditions["created_at"] = bson.M{"$gt": createdAtStr}
 	} else {
 		conditions["message"] = bson.RegEx{Pattern: message, Options: "i"}
 	}
 
-	err := coll.Find(conditions).Sort("created_at").All(&results)
+	var searchResult []MongoDBLog
+	err := coll.Find(conditions).Sort("created_at").All(&searchResult)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for _, mongoDBLog := range searchResult {
+		log := models.Log{
+			ID        : mongoDBLog.ID.Hex(),
+			Token     : mongoDBLog.Token,
+			Type      : mongoDBLog.Type,
+			Message   : mongoDBLog.Message,
+			CreatedAt : mongoDBLog.CreatedAt,
+		}
+
+		results = append(results, log)
+	}
+
 	return results, err
 }
 
