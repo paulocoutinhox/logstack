@@ -4,7 +4,7 @@ LogStack is a simple log repository made with Go (Golang).
 
 It use a simple plugin mechanism that let you use some different datasources to store and retrive logs.
 
-Today i have implemented MongoDB and ElasticSearch datasources, feel free to implement more :)
+Today i have implemented MongoDB and ElasticSearch 2.0 datasources, feel free to implement more :)
 
 # Configuration
 
@@ -20,7 +20,7 @@ dshost = 127.0.0.1
 dscontainer = logstack
 ```
 
-Example for ElasticSearch as the datasource:
+Example for ElasticSearch 2.0 as the datasource:
 
 ```
 [server]
