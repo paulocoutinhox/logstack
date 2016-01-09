@@ -1,14 +1,13 @@
 package datasource
 
 import (
-	"github.com/prsolucoes/logstack/models/domain"
-	"gopkg.in/ini.v1"
-	"time"
-	"gopkg.in/olivere/elastic.v3"
+	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
-	"encoding/json"
+	"github.com/prsolucoes/logstack/models/domain"
+	"gopkg.in/ini.v1"
+	"gopkg.in/olivere/elastic.v3"
+	"time"
 )
 
 type ElasticSearchDataSource struct {
@@ -46,7 +45,7 @@ func (This *ElasticSearchDataSource) LoadConfig(config *ini.File) error {
 	}
 
 	if dataBaseName == "" {
-		host = "logstack"
+		dataBaseName = "logstack"
 	}
 
 	This.Host = host
@@ -77,10 +76,10 @@ func (This *ElasticSearchDataSource) InsertLog(newLog *models.Log) error {
 	newLog.CreatedAt = createAt
 
 	_, err := This.Client.Index().
-	Index(This.Index).
-	Type(This.Type).
-	BodyJson(newLog).
-	Do()
+		Index(This.Index).
+		Type(This.Type).
+		BodyJson(newLog).
+		Do()
 
 	if err != nil {
 		return err
@@ -102,8 +101,7 @@ func (This *ElasticSearchDataSource) LogList(token, message string, createdAt ti
 		query = query.Must(elastic.NewMatchQuery("message", message))
 	}
 
-	source, err := query.Source()
-	log.Printf("Query: %v", source)
+	_, err := query.Source()
 
 	searchResult, err := This.Client.Search().Index(This.Index).Query(query).Do()
 

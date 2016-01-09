@@ -50,7 +50,7 @@ func (This *MongoDBDataSource) LoadConfig(config *ini.File) error {
 	}
 
 	if dataBaseName == "" {
-		host = "logstack"
+		dataBaseName = "logstack"
 	}
 
 	This.Host = host
@@ -82,10 +82,10 @@ func (This *MongoDBDataSource) InsertLog(newLog *models.Log) error {
 	newLog.CreatedAt = createAt
 
 	mongoDBLog := &MongoDBLog{
-		Token     : newLog.Token,
-		Type      : newLog.Type,
-		Message   : newLog.Message,
-		CreatedAt : newLog.CreatedAt,
+		Token:     newLog.Token,
+		Type:      newLog.Type,
+		Message:   newLog.Message,
+		CreatedAt: newLog.CreatedAt,
 	}
 
 	session := This.Session.Clone()
@@ -123,11 +123,11 @@ func (This *MongoDBDataSource) LogList(token, message string, createdAt time.Tim
 
 	for _, mongoDBLog := range searchResult {
 		log := models.Log{
-			ID        : mongoDBLog.ID.Hex(),
-			Token     : mongoDBLog.Token,
-			Type      : mongoDBLog.Type,
-			Message   : mongoDBLog.Message,
-			CreatedAt : mongoDBLog.CreatedAt,
+			ID:        mongoDBLog.ID.Hex(),
+			Token:     mongoDBLog.Token,
+			Type:      mongoDBLog.Type,
+			Message:   mongoDBLog.Message,
+			CreatedAt: mongoDBLog.CreatedAt,
 		}
 
 		results = append(results, log)
