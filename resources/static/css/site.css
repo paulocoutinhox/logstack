@@ -160,6 +160,11 @@ a.desc:after {
 	text-transform: capitalize;
 }
 
+.panel-clear {
+    display: block;
+    clear: both;
+}
+
 .panel-body {
 	word-wrap: break-word;
 	-ms-word-break: break-all;

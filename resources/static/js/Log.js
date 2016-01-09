@@ -73,27 +73,17 @@ var Log = new function()
 		
 		var createdAtConverted = Util.dateToUserStringUsingHTML(Util.convertUTCDateToLocalDate(new Date(createdAt)));
 
-		/*
-		<div class="panel panel-primary">
-        			<div class="panel-heading">
-        				<h3 class="panel-title">Message</h3>
-        			</div>
-        			<div class="panel-body">
-        				No results :(
-        			</div>
-        		</div>
-		*/
-
 		var html = '' +
 		'<div id="log-row-' + id + '" class="panel ' + typeHtml + ' log-row log-row-type-' + type.toLowerCase() + '" onclick="Log.showDetails(\'' + id + '\')">' +
 		'    <div class="panel-heading">' +
 		'        <h3 class="panel-title">' +
-		'            <p>Type: <span id="log-data-type-' + id + '">' + type + '</span></p>' +
-		'            <p>Created at: <span id="log-data-created-at-' + id + '">' + createdAtConverted + '</span></p>' +
+		'            <span style="float: left;">Type: <span id="log-data-type-' + id + '">' + type + '</span></span>' +
+		'            <span style="float: right;"><span id="log-data-created-at-' + id + '">' + createdAtConverted + '</span></span>' +
+		'            <span class="panel-clear"></span>' +
 		'        </h3>' +
 		'    </div>' +
 		'    <div class="panel-body">' +
-		'        <span id="log-data-message-' + id + '">' + message + '</span>'
+		'        <span id="log-data-message-' + id + '">' + message + '</span>' +
 		'    </div>' +
 		'</div>';
 
