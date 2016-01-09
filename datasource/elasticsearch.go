@@ -101,8 +101,6 @@ func (This *ElasticSearchDataSource) LogList(token, message string, createdAt ti
 		query = query.Must(elastic.NewMatchQuery("message", message))
 	}
 
-	_, err := query.Source()
-
 	searchResult, err := This.Client.Search().Index(This.Index).Query(query).Do()
 
 	if err != nil {
