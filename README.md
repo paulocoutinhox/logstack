@@ -1,3 +1,6 @@
+# Support with donation
+[![Support with donation](http://donation.pcoutinho.com/images/donate-button.png)](http://donation.pcoutinho.com/)
+
 # LogStack
 
 LogStack is a simple log repository made with Go (Golang).
